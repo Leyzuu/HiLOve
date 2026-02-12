@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Be My Valentine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@300;600;800&family=Indie+Flower&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            overflow-x: hidden;
+            /* Romantic Gradient Background */
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e6 50%, #fecdd3 100%);
+            min-height: 100vh;
+        }
+        .handwriting {
+            font-family: 'Dancing Script', cursive;
+        }
+        .marker-font {
+            font-family: 'Indie Flower', cursive;
+        }
+        
+        /* Floating Hearts Background */
+        .heart-bg {
+            position: fixed;
+            color: rgba(225, 29, 72, 0.4); 
+            animation: float-up linear infinite;
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(110vh) rotate(0deg) scale(0.5); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.5); opacity: 0; }
+        }
+
+        /* Photo Frame Style */
+        .photo-frame {
+            background: white;
+            padding: 10px;
+            padding-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transform: rotate(-2deg);
+            transition: transform 0.3s ease;
+        }
+        .photo-frame:hover {
+            transform: rotate(0deg) scale(1.02);
+            z-index: 10;
+        }
+        .photo-frame:nth-child(2) {
+            transform: rotate(2deg);
+            z-index: 5;
+        }
+        .photo-frame:nth-child(3) {
+            transform: rotate(-1deg);
+        }
+
+        /* Paper Letter Style */
+        .letter-paper {
+            background: #fffbf0; /* warm paper color */
+            background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+            background-size: 20px 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .letter-paper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 30px;
+            background: rgba(255, 182, 193, 0.3); /* Washi tape look */
+            border-bottom: 1px dashed #ffaebc;
+        }
+
+        /* Hmp Popup */
+        .hmp-popup {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Success Popup Animation */
+        .success-popup-anim {
+            animation: dropIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes dropIn {
+            from { transform: scale(0.8) translateY(-20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* No Button Runaway Animation */
+        #no-btn {
+            position: relative; 
+            transition: all 0.3s ease-out; /* Smoother movement */
+        }
+
+        /* Ensure content doesn't overflow on mobile */
+        .photo-frame {
+            max-width: 90vw;
+        }
+
+        /* Prevent horizontal scroll */
+        html {
+            overflow-x: hidden;
+        }
+
+        /* Pulsing Heart Animation */
+        .pulse-heart {
+            animation: heartPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Glowing Card Effect */
+        .glow-card {
+            animation: cardGlow 3s ease-in-out infinite;
+        }
+        @keyframes cardGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(244, 63, 94, 0.3), 0 0 40px rgba(244, 63, 94, 0.2); }
+            50% { box-shadow: 0 0 30px rgba(244, 63, 94, 0.5), 0 0 60px rgba(244, 63, 94, 0.3); }
+        }
+
+        /* Title Sway Animation */
+        .sway-title {
+            animation: gentleSway 3s ease-in-out infinite;
+        }
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+        }
+
+        /* Sparkle Effect */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkleFloat linear infinite;
+            pointer-events: none;
+        }
+        @keyframes sparkleFloat {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        /* Floating Petals */
+        .petal {
+            position: fixed;
+            animation: petalFall linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes petalFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="w-full">
+
+    <!-- Background Animation Layer -->
+    <div id="hearts-bg-layer" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+    <div id="sparkles-layer" class="absolute inset-0 overflow-hidden pointer-events-none z-10"></div>
+    <div id="petals-layer" class="absolute inset-0 overflow-hidden pointer-events-none z-5"></div>
+
+    <!-- START SCREEN (Proposal) -->
+    <div id="start-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/40 backdrop-blur-md transition-opacity duration-500 h-screen w-screen overflow-hidden">
+        <!-- Decorative Border -->
+        <div class="absolute inset-4 border-4 border-rose-200 rounded-3xl opacity-50 pointer-events-none md:block hidden"></div>
+        
+        <div class="text-center p-6 md:p-12 relative max-w-2xl mx-auto bg-white/90 rounded-[3rem] border-2 border-rose-100 backdrop-blur-sm w-[90%] md:w-auto glow-card">
+            <!-- Decorative Corners -->
+            <div class="absolute top-2 left-2 text-2xl md:text-3xl opacity-70">💕</div>
+            <div class="absolute top-2 right-2 text-2xl md:text-3xl opacity-70">💕</div>
+            <div class="absolute bottom-2 left-2 text-2xl md:text-3xl opacity-70">💕</div>
+            <div class="absolute bottom-2 right-2 text-2xl md:text-3xl opacity-70">💕</div>
+            
+            <div class="mb-4 md:mb-6 text-6xl md:text-8xl pulse-heart drop-shadow-md">💖</div>
+            
+            <h1 class="handwriting text-5xl md:text-7xl text-rose-500 mb-6 md:mb-8 drop-shadow-sm leading-tight sway-title">
+                Hi Love! <br>Will you be my<br>Valentine?
+            </h1>
+            
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mt-4 md:mt-8 h-40 relative w-full">
+                <!-- YES BUTTON -->
+                <button onclick="handleYes()" class="group relative px-10 py-3 md:px-12 md:py-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-full font-bold shadow-xl transition-all transform hover:scale-110 active:scale-95 border-2 border-rose-400 z-20 text-lg md:text-xl w-40 md:w-auto animate-pulse">
+                    YES 🥰
+                </button>
+
+                <!-- NO BUTTON (Runaway) -->
+                <div class="relative w-32 h-16 flex items-center justify-center">
+                    <button id="no-btn" onmouseover="moveNoButton()" onclick="clickNo()" ontouchstart="moveNoButton()" class="px-8 py-3 bg-gray-400 hover:bg-gray-500 text-white rounded-full font-bold shadow-lg z-10 text-lg md:text-xl w-32">
+                        NO 😢
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hmp Dialog (Appears when NO is clicked) -->
+        <div id="hmp-dialog" class="hidden fixed bg-white px-6 py-3 rounded-full shadow-xl border-2 border-rose-400 hmp-popup z-[100]">
+            <p class="text-xl font-bold text-rose-500">Hmp! 😤</p>
+        </div>
+    </div>
+
+    <!-- SUCCESS POPUP (Hidden initially, appears after YES) -->
+    <div id="success-popup" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white p-8 rounded-[2rem] text-center shadow-2xl max-w-sm w-full mx-4 success-popup-anim border-4 border-rose-200">
+            <div class="text-6xl mb-4 animate-pulse">🥰</div>
+            <h2 class="handwriting text-4xl text-rose-500 mb-4 font-bold">Yieee!</h2>
+            <p class="text-gray-700 text-lg mb-8 font-medium leading-relaxed">
+                Alam ko naman na <span class="text-rose-500 font-bold">YES</span> ang sagot mo kaya walang pilit! 😉
+            </p>
+            <button onclick="showGallery()" class="w-full px-8 py-4 bg-rose-500 text-white rounded-xl font-bold shadow-lg hover:bg-rose-600 transition-transform active:scale-95 text-lg">
+                See Your Gift ->
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT (Hidden initially) -->
+    <div id="main-content" class="hidden relative w-full h-screen overflow-hidden">
+        
+        <!-- Header -->
+        <div class="fixed top-0 left-0 right-0 p-4 flex justify-between items-center z-40 pointer-events-none">
+            <div class="pointer-events-auto bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-rose-200">
+                <h2 class="handwriting text-xl md:text-2xl text-rose-500 font-bold">Happy Valentine's Day ❤️</h2>
+            </div>
+            
+            <!-- Music Toggle -->
+            <button id="music-btn" onclick="toggleMusic()" class="pointer-events-auto bg-white/90 p-3 rounded-full shadow-lg text-rose-500 hover:bg-rose-50 transition border border-rose-100">
+                <svg id="music-icon-on" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <svg id="music-icon-off" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z m-2 2l2 2m0-2l-2 2" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="container mx-auto px-4 pt-16 md:pt-20 h-full flex flex-col justify-center">
+            <!-- PHOTOS SECTION -->
+            <div class="flex flex-row justify-center items-center gap-4 md:gap-6 mb-4">
+                <!-- Photo 1 -->
+                <div class="photo-frame w-32 md:w-48 bg-white">
+                    <div class="aspect-[4/5] overflow-hidden bg-gray-100">
+                        <img src="3e14855e-9f41-4451-9c37-c801bbd535d8.jpg" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Us">
+                    </div>
+                    <p class="text-center marker-font text-xs md:text-base mt-1 text-gray-600">The Beginning</p>
+                </div>
+
+                <!-- Photo 2 -->
+                <div class="photo-frame w-32 md:w-48 bg-white">
+                    <div class="aspect-[4/5] overflow-hidden bg-gray-100">
+                        <img src="7419246c-f5c9-4d8e-8877-9da0d6a04fdf.jpg" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Us">
+                    </div>
+                    <p class="text-center marker-font text-xs md:text-base mt-1 text-gray-600">Our Adventures</p>
+                </div>
+
+                <!-- Photo 3 -->
+                <div class="photo-frame w-32 md:w-48 bg-white">
+                    <div class="aspect-[4/5] overflow-hidden bg-gray-100">
+                        <img src="bed25fe4-1b0e-4d8e-8f53-83cd791b8703.jpg" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Us">
+                    </div>
+                    <p class="text-center marker-font text-xs md:text-base mt-1 text-gray-600">Through It All</p>
+                </div>
+            </div>
+
+            <!-- MESSAGE SECTION -->
+            <div class="max-w-2xl mx-auto letter-paper p-4 md:p-8 rounded-lg transform rotate-1">
+                <h1 class="handwriting text-2xl md:text-4xl text-rose-500 mb-3 text-center">Hi love,</h1>
+                
+                <div class="space-y-2 text-gray-700 font-serif text-sm md:text-base leading-relaxed">
+                    <p>
+                        Happy Valentine's Day! 💖
+                    </p>
+                    <p>
+                        Sorry, love. Ito lang ang nakaya ko. Medyo tight talaga ang budget ko ngayon. Pero sana ma appreciate mo ito. Alam mo naman na walang perang katumbas ang pagmamahal ko sa iyo. Kahit minsan o madalas ay mahiyain ako sa public. Pero love, gusto ko talagang i express ang love ko sa iyo. Mahiyain lang talaga ako, pero alam mo kung gaano kita kamahal.
+                    </p>
+                    <p>
+                        Thank you, love, sa lahat ng binibigay mo sa akin. Kahit madalas childish ako, mahal na mahal pa rin kita. I love you, love. Sana masaya ka ngayong Araw ng mga Puso. Basta love, do your best araw araw. Proud na proud ako sa iyo bilang isang hard working na tao.
+                    </p>
+                    <p>
+                        I love you, love.
+                    </p>
+                </div>
+
+                <div class="mt-4 text-right">
+                    <p class="handwriting text-xl md:text-2xl text-rose-500">Love,</p>
+                    <p class="marker-font text-sm md:text-base text-gray-600 mt-1">Your Boyfriend</p>
+                </div>
+                
+                <div class="text-center mt-3 text-2xl md:text-3xl animate-bounce">
+                    😘
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="PALAGI - TJxKZ  LIVE SESSIONS.mp3" type="audio/mpeg">
+        <source src="https://cdn.pixabay.com/audio/2022/03/23/audio_c8a891c14e.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const bgMusic = document.getElementById('bg-music');
+        let isMusicPlaying = false;
+
+        // Set starting time to 45 seconds
+        bgMusic.addEventListener('loadedmetadata', function() {
+            bgMusic.currentTime = 45;
+        });
+
+        // Start background hearts
+        initBackground();
+        initSparkles();
+        initPetals();
+
+        function initBackground() {
+            const container = document.getElementById('hearts-bg-layer');
+            const symbols = ['❤', '💘', '💖', '💗', '💓', '🌹', '🥰', '😍', '💋'];
+            
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.classList.add('heart-bg');
+                el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.fontSize = (Math.random() * 20 + 10) + 'px'; 
+                el.style.animationDuration = (Math.random() * 5 + 4) + 's'; 
+                el.style.opacity = Math.random() * 0.5 + 0.3; 
+                
+                container.appendChild(el);
+                setTimeout(() => el.remove(), 9000);
+            }, 300); 
+        }
+
+        function initSparkles() {
+            const container = document.getElementById('sparkles-layer');
+            
+            setInterval(() => {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                sparkle.style.animationDelay = Math.random() * 1 + 's';
+                
+                container.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 5000);
+            }, 200);
+        }
+
+        function initPetals() {
+            const container = document.getElementById('petals-layer');
+            const petals = ['🌸', '🌺', '🌹', '💐', '🏵️'];
+            
+            setInterval(() => {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                petal.innerText = petals[Math.floor(Math.random() * petals.length)];
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.fontSize = (Math.random() * 15 + 10) + 'px';
+                petal.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                petal.style.opacity = Math.random() * 0.6 + 0.3;
+                
+                container.appendChild(petal);
+                setTimeout(() => petal.remove(), 14000);
+            }, 400);
+        }
+
+        // --- NO BUTTON LOGIC ---
+        function moveNoButton() {
+            const btn = document.getElementById('no-btn');
+            const container = btn.parentElement;
+            
+            // Get container dimensions
+            const containerRect = container.getBoundingClientRect();
+            const btnWidth = btn.offsetWidth;
+            const btnHeight = btn.offsetHeight;
+            
+            // For mobile, use a limited area around the container
+            // For desktop, allow more movement
+            const isMobile = window.innerWidth < 768;
+            
+            if (isMobile) {
+                // On mobile, keep button within a smaller area relative to the start screen
+                const startScreen = document.getElementById('start-screen');
+                const screenWidth = startScreen.offsetWidth;
+                const screenHeight = startScreen.offsetHeight;
+                
+                // Define safe boundaries (larger margins for mobile)
+                const margin = 40;
+                const minX = margin;
+                const maxX = screenWidth - btnWidth - margin;
+                const minY = screenHeight * 0.4; // Keep in visible middle-bottom area
+                const maxY = screenHeight * 0.7;
+                
+                // Random position within safe area
+                const newX = Math.random() * (maxX - minX) + minX;
+                const newY = Math.random() * (maxY - minY) + minY;
+                
+                // Use fixed positioning but with constrained bounds
+                btn.style.position = 'fixed';
+                btn.style.left = newX + 'px';
+                btn.style.top = newY + 'px';
+                btn.style.zIndex = '100';
+            } else {
+                // Desktop behavior - more freedom
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                
+                const margin = 20;
+                const minX = margin;
+                const maxX = viewportWidth - btnWidth - margin;
+                const minY = margin;
+                const maxY = viewportHeight - btnHeight - margin;
+                
+                const newX = Math.random() * (maxX - minX) + minX;
+                const newY = Math.random() * (maxY - minY) + minY;
+                
+                btn.style.position = 'fixed';
+                btn.style.left = newX + 'px';
+                btn.style.top = newY + 'px';
+                btn.style.zIndex = '100';
+            }
+        }
+
+        function clickNo() {
+            const btn = document.getElementById('no-btn');
+            const dialog = document.getElementById('hmp-dialog');
+            
+            // Get button's current position before moving it
+            const btnRect = btn.getBoundingClientRect();
+            
+            // Position dialog above the button
+            dialog.style.left = (btnRect.left + btnRect.width / 2 - dialog.offsetWidth / 2) + 'px';
+            dialog.style.top = (btnRect.top - 60) + 'px'; // 60px above button
+            
+            // Show "Hmp!" dialog
+            dialog.classList.remove('hidden');
+            
+            // Move button immediately (this will move it to a new random position)
+            moveNoButton();
+
+            // Hide dialog after 1 second
+            setTimeout(() => {
+                dialog.classList.add('hidden');
+            }, 1000);
+        }
+
+        // --- YES BUTTON LOGIC ---
+        function handleYes() {
+            toggleMusic();
+            // Show success popup FIRST
+            document.getElementById('success-popup').classList.remove('hidden');
+        }
+
+        function showGallery() {
+            // Hide everything else and show main content
+            const startScreen = document.getElementById('start-screen');
+            const successPopup = document.getElementById('success-popup');
+            const mainContent = document.getElementById('main-content');
+            
+            // Fade out
+            startScreen.style.opacity = '0';
+            successPopup.style.opacity = '0';
+            successPopup.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                startScreen.classList.add('hidden');
+                successPopup.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                window.scrollTo(0,0);
+            }, 500);
+        }
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                isMusicPlaying = false;
+                document.getElementById('music-icon-on').classList.add('hidden');
+                document.getElementById('music-icon-off').classList.remove('hidden');
+            } else {
+                bgMusic.volume = 0.4;
+                const playPromise = bgMusic.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        isMusicPlaying = true;
+                        document.getElementById('music-icon-on').classList.remove('hidden');
+                        document.getElementById('music-icon-off').classList.add('hidden');
+                    })
+                    .catch(error => {
+                        console.log("Audio playback prevented:", error);
+                        // Try to play again after user interaction
+                        setTimeout(() => {
+                            bgMusic.play().then(() => {
+                                isMusicPlaying = true;
+                                document.getElementById('music-icon-on').classList.remove('hidden');
+                                document.getElementById('music-icon-off').classList.add('hidden');
+                            }).catch(() => {
+                                console.log("Audio still blocked - click the music button to play");
+                            });
+                        }, 100);
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
