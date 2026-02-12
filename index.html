@@ -276,7 +276,7 @@
     </div>
 
     <!-- MAIN CONTENT (Hidden initially) -->
-    <div id="main-content" class="hidden relative w-full h-screen overflow-hidden">
+    <div id="main-content" class="hidden relative w-full min-h-screen overflow-y-auto overflow-x-hidden">
         
         <!-- Header -->
         <div class="fixed top-0 left-0 right-0 p-4 flex justify-between items-center z-40 pointer-events-none">
@@ -295,9 +295,9 @@
             </button>
         </div>
 
-        <div class="container mx-auto px-4 pt-16 md:pt-20 h-full flex flex-col justify-center">
+        <div class="container mx-auto px-4 pt-16 md:pt-20 pb-8 flex flex-col md:justify-center md:min-h-screen">
             <!-- PHOTOS SECTION -->
-            <div class="flex flex-row justify-center items-center gap-4 md:gap-6 mb-4">
+            <div class="flex flex-row justify-center items-center gap-4 md:gap-6 mb-4 mt-4 md:mt-0">
                 <!-- Photo 1 -->
                 <div class="photo-frame w-32 md:w-48 bg-white">
                     <div class="aspect-[4/5] overflow-hidden bg-gray-100">
@@ -324,7 +324,7 @@
             </div>
 
             <!-- MESSAGE SECTION -->
-            <div class="max-w-2xl mx-auto letter-paper p-4 md:p-8 rounded-lg transform rotate-1">
+            <div class="max-w-2xl mx-auto letter-paper p-4 md:p-8 rounded-lg transform rotate-1 mb-4">
                 <h1 class="handwriting text-2xl md:text-4xl text-rose-500 mb-3 text-center">Hi love,</h1>
                 
                 <div class="space-y-2 text-gray-700 font-serif text-sm md:text-base leading-relaxed">
@@ -353,8 +353,8 @@
             </div>
 
             <!-- View Memories Button -->
-            <div class="text-center mt-8">
-                <button onclick="openVideoGallery()" class="px-8 py-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-full font-bold shadow-xl transition-all transform hover:scale-110 active:scale-95 border-2 border-rose-400 text-lg">
+            <div class="text-center mt-6 mb-8">
+                <button onclick="openVideoGallery()" class="px-8 py-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white rounded-full font-bold shadow-xl transition-all transform hover:scale-110 active:scale-95 border-2 border-rose-400 text-lg animate-pulse">
                     🎥 View Memories
                 </button>
             </div>
