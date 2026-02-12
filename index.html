@@ -611,7 +611,15 @@
             // Auto-play the video when gallery opens
             const video = document.getElementById('video-thumb-1');
             video.muted = true; // Ensure video is muted
-            video.play(); // Auto-play the video
+            
+            // Try to play with error handling
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('Video autoplay prevented, user needs to click play:', error);
+                    // Autoplay was prevented, user will need to click play button on video
+                });
+            }
         }
 
         function closeVideoGallery() {
@@ -619,6 +627,7 @@
             // Pause the video when gallery closes
             const video = document.getElementById('video-thumb-1');
             video.pause();
+            video.currentTime = 0; // Reset to beginning
         }
 
         function playVideo(videoId) {
